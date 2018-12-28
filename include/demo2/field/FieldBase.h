@@ -5,6 +5,7 @@
 
 #include "comms/Field.h"
 #include "comms/options.h"
+#include "demo2/Version.h"
 
 namespace demo2
 {
