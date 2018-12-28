@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdint>
+#include "demo2/Version.h"
 
 namespace demo2
 {
