@@ -1,15 +1,24 @@
 /// @file
-/// @brief Contains definition of protocol default options.
+/// @brief Contains definition of protocol default options for bare-metal application
+///    where usage of dynamic memory allocation is disabled.
 
 #pragma once
 
-#include "comms/options.h"
+#ifndef DEFAULT_SEQ_FIXED_STORAGE_SIZE
+/// @brief Define default fixed size for various sequence fields
+/// @details May be defined during compile time to change the default value.
+#define DEFAULT_SEQ_FIXED_STORAGE_SIZE 32
+#endif
 
 namespace demo2
 {
 
-/// @brief Default (empty) options of the protocol.
-struct DefaultOptions
+namespace options
+{
+
+/// @brief Default options for bare-metal application where usage of dynamic
+///    memory allocation is diabled.
+struct BareMetalDefaultOptions
 {
     /// @brief Extra options for messages.
     struct message
@@ -21,7 +30,7 @@ struct DefaultOptions
         struct Msg2Fields
         {
             /// @brief Extra options for @ref demo2::message::Msg2Fields::List field.
-            using List = comms::option::EmptyOption;
+            using List = comms::option::FixedSizeStorage<DEFAULT_SEQ_FIXED_STORAGE_SIZE>;
             
         }; // struct Msg2Fields
         
@@ -37,10 +46,10 @@ struct DefaultOptions
         struct FrameLayers
         {
             /// @brief Extra options for @ref demo2::frame::FrameLayers::Data layer.
-            using Data = comms::option::EmptyOption;
+            using Data = comms::option::FixedSizeStorage<DEFAULT_SEQ_FIXED_STORAGE_SIZE * 8>;
             
             /// @brief Extra options for @ref demo2::frame::FrameLayers::Id layer.
-            using Id = comms::option::EmptyOption;
+            using Id = comms::option::InPlaceAllocation;
             
         }; // struct FrameLayers
         
@@ -48,6 +57,8 @@ struct DefaultOptions
     
     
 };
+
+} // namespace options
 
 } // namespace demo2
 

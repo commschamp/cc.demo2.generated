@@ -13,10 +13,10 @@
 #include "comms/protocol/SyncPrefixLayer.h"
 #include "comms/protocol/TransportValueLayer.h"
 #include "comms/protocol/checksum/Crc.h"
-#include "demo2/AllMessages.h"
-#include "demo2/DefaultOptions.h"
 #include "demo2/field/FieldBase.h"
 #include "demo2/field/MsgId.h"
+#include "demo2/input/AllMessages.h"
+#include "demo2/options/DefaultOptions.h"
 
 namespace demo2
 {
@@ -28,7 +28,7 @@ namespace frame
 /// @tparam TOpt Protocol options.
 /// @see @ref Frame
 /// @headerfile "demo2/frame/Frame.h"
-template <typename TOpt = demo2::DefaultOptions>
+template <typename TOpt = demo2::options::DefaultOptions>
 struct FrameLayers
 {
     /// @brief Definition of layer "Data".
@@ -178,8 +178,8 @@ struct FrameLayers
 /// @headerfile "demo2/frame/Frame.h"
 template <
    typename TMessage,
-   typename TAllMessages = demo2::AllMessages<TMessage>,
-   typename TOpt = demo2::DefaultOptions
+   typename TAllMessages = demo2::input::AllMessages<TMessage>,
+   typename TOpt = demo2::options::DefaultOptions
 >
 class Frame : public
     FrameLayers<TOpt>::template Stack<TMessage, TAllMessages>

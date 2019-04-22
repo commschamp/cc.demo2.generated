@@ -2,7 +2,7 @@
 
 #include "demo2/frame/Frame.h"
 #include "cc_plugin/Message.h"
-#include "cc_plugin/AllMessages.h"
+#include "cc_plugin/input/AllMessages.h"
 
 namespace demo2
 {
@@ -16,7 +16,7 @@ namespace frame
 using Frame =
     demo2::frame::Frame<
         demo2::cc_plugin::Message,
-        demo2::cc_plugin::AllMessages
+        demo2::cc_plugin::input::AllMessages
     >;
 
 } // namespace frame
