@@ -11,9 +11,9 @@
 #include "comms/field/IntValue.h"
 #include "comms/field/Optional.h"
 #include "comms/options.h"
-#include "demo2/DefaultOptions.h"
 #include "demo2/MsgId.h"
 #include "demo2/field/FieldBase.h"
+#include "demo2/options/DefaultOptions.h"
 
 namespace demo2
 {
@@ -25,7 +25,7 @@ namespace message
 /// @tparam TOpt Extra options
 /// @see @ref Msg2
 /// @headerfile "demo2/message/Msg2.h"
-template <typename TOpt = demo2::DefaultOptions>
+template <typename TOpt = demo2::options::DefaultOptions>
 struct Msg2Fields
 {
     /// @brief Scope for all the member fields of @ref List list.
@@ -67,12 +67,19 @@ struct Msg2Fields
             };
             
             /// @brief Definition of <b>"F2"</b> field.
-            using F2 =
+            struct F2 : public
                 comms::field::Optional<
                     F2Field,
                     comms::option::ExistsByDefault,
                     comms::option::ExistsUntilVersion<1U>
-                >;
+                >
+            {
+                /// @brief Name of the field.
+                static const char* name()
+                {
+                    return F2Field::name();
+                }
+            };
             
             /// @brief Inner field of @ref F3 optional.
             struct F3Field : public
@@ -91,12 +98,19 @@ struct Msg2Fields
             };
             
             /// @brief Definition of <b>"F3"</b> field.
-            using F3 =
+            struct F3 : public
                 comms::field::Optional<
                     F3Field,
                     comms::option::ExistsByDefault,
                     comms::option::ExistsSinceVersion<3U>
-                >;
+                >
+            {
+                /// @brief Name of the field.
+                static const char* name()
+                {
+                    return F3Field::name();
+                }
+            };
             
             /// @brief Inner field of @ref F4 optional.
             struct F4Field : public
@@ -115,12 +129,19 @@ struct Msg2Fields
             };
             
             /// @brief Definition of <b>"F4"</b> field.
-            using F4 =
+            struct F4 : public
                 comms::field::Optional<
                     F4Field,
                     comms::option::ExistsByDefault,
                     comms::option::ExistsBetweenVersions<3U, 4U>
-                >;
+                >
+            {
+                /// @brief Name of the field.
+                static const char* name()
+                {
+                    return F4Field::name();
+                }
+            };
             
             /// @brief All members bundled in @b std::tuple.
             using All =
@@ -200,7 +221,7 @@ struct Msg2Fields
 /// @tparam TMsgBase Base (interface) class.
 /// @tparam TOpt Extra options
 /// @headerfile "demo2/message/Msg2.h"
-template <typename TMsgBase, typename TOpt = demo2::DefaultOptions>
+template <typename TMsgBase, typename TOpt = demo2::options::DefaultOptions>
 class Msg2 : public
     comms::MessageBase<
         TMsgBase,

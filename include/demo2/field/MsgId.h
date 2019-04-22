@@ -4,11 +4,12 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 #include "comms/field/EnumValue.h"
 #include "comms/options.h"
-#include "demo2/DefaultOptions.h"
 #include "demo2/MsgId.h"
 #include "demo2/field/FieldBase.h"
+#include "demo2/options/DefaultOptions.h"
 
 namespace demo2
 {
@@ -19,7 +20,7 @@ namespace field
 /// @brief Definition of <b>"MsgId"</b> field.
 /// @tparam TOpt Protocol options.
 /// @tparam TExtraOpts Extra options.
-template <typename TOpt = demo2::DefaultOptions, typename... TExtraOpts>
+template <typename TOpt = demo2::options::DefaultOptions, typename... TExtraOpts>
 struct MsgId : public
     comms::field::EnumValue<
         demo2::field::FieldBase<>,
@@ -32,6 +33,23 @@ struct MsgId : public
     static const char* name()
     {
         return "MsgId";
+    }
+    
+    /// @brief Retrieve name of the enum value
+    static const char* valueName(demo2::MsgId val)
+    {
+        static const char* Map[] = {
+            nullptr,
+            "Msg1",
+            "Msg2"
+        };
+        static const std::size_t MapSize = std::extent<decltype(Map)>::value;
+        
+        if (MapSize <= static_cast<std::size_t>(val)) {
+            return nullptr;
+        }
+        
+        return Map[static_cast<std::size_t>(val)];
     }
     
 };
