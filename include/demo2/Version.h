@@ -15,10 +15,10 @@
 #define DEMO2_MINOR_VERSION (6U)
 
 /// @brief Patch version of the protocol library.
-#define DEMO2_PATCH_VERSION (0U)
+#define DEMO2_PATCH_VERSION (1U)
 
 /// @brief Full version of the protocol library as single number.
-#define DEMO2_VERSION (COMMS_MAKE_VERSION(DEMO2_MAJOR_VERSION, DEMO2_MINOR_VERSION, DEMO2_MINOR_VERSION))
+#define DEMO2_VERSION (COMMS_MAKE_VERSION(DEMO2_MAJOR_VERSION, DEMO2_MINOR_VERSION, DEMO2_PATCH_VERSION))
 
 
 namespace demo2
