@@ -1,85 +1,241 @@
+cmake_minimum_required (VERSION 3.1)
+project ("demo2")
+
+option (OPT_BUILD_TEST "Build and install test applications." OFF)
+option (OPT_BUILD_PLUGIN "Build and install CommsChampion plugin." OFF)
+option (OPT_NO_COMMS "Forcefully exclude checkout and install of COMMS library. \
+    Works only if OPT_BUILD_TEST and OPT_BUILD_PLUGIN options weren't used" OFF)
+option (OPT_WARN_AS_ERR "Treat warning as error" ON)
+option (OPT_USE_CCACHE "Use of ccache on UNIX system" ON)
+
+# Other parameters:
+# OPT_CC_TAG - Override default tag of comms_champion project.
+# OPT_QT_DIR - Path to custom Qt5 install directory.
+# OPT_CC_MAIN_INSTALL_DIR - Path to CommsChampion external install directory
+#       (if such already built).
+# OPT_TEST_OPTIONS - Class name of the options for test applications,
+#       defaults to demo2::options::DefaultOptions.
+# OPT_TEST_INTERFACE - Class name of the interface for test applications,
+#       defaults to demo2::Message.
+# OPT_TEST_FRAME - Class name of the frame for test applications,
+#       defaults to demo2::frame::Frame.
+# OPT_TEST_INPUT_MESSAGES - All input messages bundle for test applications,
+#       defaults to demo2::input::AllMessages.
+
+if ("${OPT_CC_TAG}" STREQUAL "")
+    set (OPT_CC_TAG "v2.0")
+endif()
+
+if (NOT CMAKE_CXX_STANDARD)
+    set (CMAKE_CXX_STANDARD 11)
+endif()
+
+set (INSTALL_DIR ${CMAKE_INSTALL_PREFIX})
+
+include(GNUInstallDirs)
+set (LIB_INSTALL_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR})
+set (BIN_INSTALL_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_BINDIR})
+set (INC_INSTALL_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_INCLUDEDIR})
+set (CONFIG_INSTALL_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_DATADIR}/CommsChampion)
+set (PLUGIN_INSTALL_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/CommsChampion/plugin)
+set (DOC_INSTALL_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_DOCDIR})
+
 ######################################################################
-function (define_test name)
-    set (src ${name}.cpp)
-    add_executable(${name} ${src})
-    target_link_libraries(${name} PRIVATE cc::comms demo2)
 
-    set (extra_defs)
-    if (NOT "${OPT_TEST_INTERFACE}" STREQUAL "")
-        list (APPEND extra_defs -DINTERFACE=${OPT_TEST_INTERFACE})
+if (OPT_BUILD_PLUGIN)
+    if (NOT "${OPT_QT_DIR}" STREQUAL "")
+        list (APPEND CMAKE_PREFIX_PATH ${OPT_QT_DIR})
     endif ()
 
-    if (NOT "${OPT_TEST_INTERFACE_HEADER}" STREQUAL "")
-        list (APPEND extra_defs -DINTERFACE_HEADER=${OPT_TEST_INTERFACE_HEADER})
-    endif ()
+    find_package(Qt5Core)
+    find_package(Qt5Widgets)
+endif ()
 
-    if (NOT "${OPT_TEST_FRAME}" STREQUAL "")
-        list (APPEND extra_defs -DFRAME=${OPT_TEST_FRAME})
-    endif ()
+######################################################################
 
-    if (NOT "${OPT_TEST_FRAME_HEADER}" STREQUAL "")
-        list (APPEND extra_defs -DFRAME_HEADER=${OPT_TEST_FRAME_HEADER})
-    endif ()
-
-    if (NOT "${OPT_TEST_OPTIONS}" STREQUAL "")
-        list (APPEND extra_defs -DOPTIONS=${OPT_TEST_OPTIONS})
-    endif ()
-
-    if (NOT "${OPT_TEST_OPTIONS_HEADER}" STREQUAL "")
-        list (APPEND extra_defs -DOPTIONS_HEADER=${OPT_TEST_OPTIONS_HEADER})
-    endif ()
-
-    if (NOT "${OPT_TEST_INPUT_MESSAGES}" STREQUAL "")
-        list (APPEND extra_defs -DINPUT_MESSAGES=${OPT_TEST_INPUT_MESSAGES})
-    endif ()
-
-    if (NOT "${OPT_TEST_INPUT_MESSAGES_HEADER}" STREQUAL "")
-        list (APPEND extra_defs -DINPUT_MESSAGES_HEADER=${OPT_TEST_INPUT_MESSAGES_HEADER})
-    endif ()
-
-    if (extra_defs)
-        target_compile_definitions(${name} PRIVATE ${extra_defs})
-    endif ()
-
-    install (
-        TARGETS ${name}
-        DESTINATION ${BIN_INSTALL_DIR}
+# Set compiler flags
+if ((CMAKE_COMPILER_IS_GNUCC) OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+    set (extra_flags_list
+        "-Wall" "-Wextra" "-Wcast-align" "-Wcast-qual" "-Wctor-dtor-privacy"
+        "-Wmissing-include-dirs"
+        "-Woverloaded-virtual" "-Wredundant-decls" "-Wshadow" "-Wundef" "-Wunused"
+        "-Wno-unknown-pragmas" "-fdiagnostics-show-option"
     )
 
-    if (TARGET ${CC_EXTERNAL_TGT})
-        add_dependencies(${name} ${CC_EXTERNAL_TGT})
+    if (CMAKE_COMPILER_IS_GNUCC)
+        list (APPEND extra_flags_list
+            "-Wnoexcept" "-Wlogical-op" "-Wstrict-null-sentinel" "-ftemplate-backtrace-limit=0"
+        )
     endif ()
-endfunction ()
+
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        list (APPEND extra_flags_list
+        "-Wno-dangling-field" "-Wno-unused-command-line-argument"
+        "-ftemplate-depth=1024")
+    endif ()
+
+    if (OPT_WARN_AS_ERR)
+        list (APPEND extra_flags_list "-Werror")
+    endif ()
+
+    string(REPLACE ";" " " extra_flags "${extra_flags_list}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${extra_flags}")
+elseif (MSVC)
+    add_definitions("/bigobj" "-D_CRT_SECURE_NO_WARNINGS")
+    if (OPT_WARN_AS_ERR)
+        add_definitions("/WX")
+    endif ()
+endif ()
+
+if ((UNIX) AND (OPT_USE_CCACHE))
+    find_program(CCACHE_FOUND ccache)
+    if(CCACHE_FOUND)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+    endif()
+endif ()
 
 ######################################################################
 
-if ("${OPT_TEST_INTERFACE}" STREQUAL "")
-    set (OPT_TEST_INTERFACE "demo2::Message")
+# Use external CommsChampion project or compile it in place
+set (CC_EXTERNAL_TGT "comms_champion_external")
+if (OPT_BUILD_TEST OR OPT_BUILD_PLUGIN)
+    set (external_cc_needed TRUE)
 endif ()
 
-if ("${OPT_TEST_FRAME}" STREQUAL "")
-    set (OPT_TEST_FRAME "demo2::frame::Frame")
+if ((external_cc_needed OR (NOT OPT_NO_COMMS)) AND ("${OPT_CC_MAIN_INSTALL_DIR}" STREQUAL ""))
+    set (cc_repo "https://github.com/arobenko/comms_champion.git")
+    set (cc_tag "${OPT_CC_TAG}")
+    set (cc_main_dir "${CMAKE_BINARY_DIR}/comms_champion")
+    set (cc_src_dir "${cc_main_dir}/src")
+    set (cc_bin_dir "${cc_main_dir}/build")
+    set (cc_install_dir "${INSTALL_DIR}")
+
+    if (NOT "${OPT_QT_DIR}" STREQUAL "")
+        set (cc_qt_dir_opt -DCC_QT_DIR=${OPT_QT_DIR})
+        set (EXT_QT_DIR ${OPT_QT_DIR})
+    endif ()
+
+    if (NOT ${OPT_BUILD_PLUGIN})
+        set (ct_lib_only_opt -DCC_COMMS_LIB_ONLY=ON)
+        set (EXT_CC_NO_COMMS_CHAMPION TRUE)
+    endif ()
+
+    find_package (Git REQUIRED)
+    set (ext_targets_inc_file "${cc_src_dir}/cmake/DefineExternalProjectTargets.cmake")
+    if (NOT EXISTS "${ext_targets_inc_file}")
+        execute_process (
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "${cc_src_dir}"
+        )
+
+        execute_process (
+            COMMAND 
+                ${GIT_EXECUTABLE} clone -b ${cc_tag} --depth 1 ${cc_repo} ${cc_src_dir}
+            RESULT_VARIABLE git_result
+        )
+
+        if (NOT "${git_result}" STREQUAL "0")
+            message (FATAL_ERROR "git clone/checkout failed")
+        endif ()
+
+        if (NOT EXISTS "${ext_targets_inc_file}")
+             message (FATAL_ERROR "Incompatible version of ${cc_repo}, please use different tag.")
+        endif ()
+
+    endif ()
+
+    set (EXT_CC_INSTALL_DIR ${cc_install_dir})
+    include (${ext_targets_inc_file})
+
+    include(ExternalProject)
+    ExternalProject_Add(
+        "${CC_EXTERNAL_TGT}"
+        PREFIX "${cc_main_dir}"
+        STAMP_DIR "${cc_bin_dir}"
+        GIT_REPOSITORY ${cc_repo}
+        GIT_TAG ${cc_tag}
+        SOURCE_DIR "${cc_src_dir}"
+        BINARY_DIR "${cc_bin_dir}"
+        INSTALL_DIR "${cc_install_dir}"
+        CMAKE_ARGS
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${cc_install_dir}
+            -DCC_NO_UNIT_TESTS=ON -DCC_NO_WARN_AS_ERR=ON -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            ${cc_qt_dir_opt} ${ct_lib_only_opt}
+    )
+
+    if (WIN32 AND (NOT "${OPT_QT_DIR}" STREQUAL ""))
+        message (STATUS "Qt5 deployment is available by building \"deploy_qt\" target")
+        add_custom_target ("deploy_qt"
+            COMMAND ${CMAKE_COMMAND} --build ${cc_bin_dir} --target deploy_qt
+            WORKING_DIRECTORY ${cc_bin_dir}
+        )
+
+        add_dependencies("deploy_qt" ${CC_EXTERNAL_TGT})
+    endif ()
+elseif (external_cc_needed)
+    list (APPEND CMAKE_PREFIX_PATH "${OPT_CC_MAIN_INSTALL_DIR}")
+    find_package(CommsChampion NO_MODULE)
 endif ()
 
-if ("${OPT_TEST_OPTIONS}" STREQUAL "")
-    set (OPT_TEST_OPTIONS "demo2::options::DefaultOptions")
+######################################################################
+
+# Define documentation target
+find_package (Doxygen)
+if (DOXYGEN_FOUND)
+    set (doc_output_dir "${DOC_INSTALL_DIR}")
+    make_directory (${doc_output_dir})
+
+    set (match_str "OUTPUT_DIRECTORY[^\n]*")
+    set (replacement_str "OUTPUT_DIRECTORY = ${doc_output_dir}")
+    set (config_file "${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen.conf")
+    set (OPT_DOXYGEN_CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/doxygen.conf")
+
+    file (READ ${config_file} config_text)
+    string (REGEX REPLACE "${match_str}" "${replacement_str}" modified_config_text "${config_text}")
+    file (WRITE "${OPT_DOXYGEN_CONFIG_FILE}" "${modified_config_text}")
+    set (doc_tgt "doc_demo2")
+    add_custom_target ("${doc_tgt}"
+        COMMAND ${DOXYGEN_EXECUTABLE} ${OPT_DOXYGEN_CONFIG_FILE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif ()
 
-if ("${OPT_TEST_INPUT_MESSAGES}" STREQUAL "")
-    set (OPT_TEST_INPUT_MESSAGES "demo2::input::AllMessages")
+######################################################################
+
+# Define protocol library
+add_library(demo2 INTERFACE)
+
+target_include_directories(demo2 INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+if (external_cc_needed AND (NOT TARGET ${CC_EXTERNAL_TGT}))
+    if (NOT TARGET cc::comms)
+        message (FATAL_ERROR "COMMS library is not found")
+    endif()
+
+    target_link_libraries(demo2 INTERFACE cc::comms)
 endif ()
 
-string (REPLACE "::" "/" OPT_TEST_INTERFACE_HEADER "${OPT_TEST_INTERFACE}.h")
-string (REPLACE "::" "/" OPT_TEST_FRAME_HEADER "${OPT_TEST_FRAME}.h")
-string (REPLACE "::" "/" OPT_TEST_OPTIONS_HEADER "${OPT_TEST_OPTIONS}.h")
-string (REPLACE "::" "/" OPT_TEST_INPUT_MESSAGES_HEADER "${OPT_TEST_INPUT_MESSAGES}.h")
+install(TARGETS demo2 EXPORT demo2Config)
+install(EXPORT demo2Config
+    DESTINATION ${LIB_INSTALL_DIR}/demo2/cmake
+)
 
-if ((CMAKE_COMPILER_IS_GNUCC) OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function")
+install (
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/demo2
+    DESTINATION ${INC_INSTALL_DIR}
+)
+
+######################################################################
+
+if (OPT_BUILD_TEST)
+    add_subdirectory(test)
 endif ()
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unneeded-internal-declaration")
-endif ()
+######################################################################
 
-define_test(demo2_input_test)
+if (OPT_BUILD_PLUGIN)
+    add_subdirectory(cc_plugin)
+endif ()
