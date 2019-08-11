@@ -18,6 +18,9 @@ public:
     Demo2Protocol();
     virtual ~Demo2Protocol();
 
+    int getVersion() const;
+    void setVersion(int value);
+    
 protected:
     virtual const QString& nameImpl() const override;
     virtual MessagesList readImpl(const comms_champion::DataInfo& dataInfo, bool final) override;
