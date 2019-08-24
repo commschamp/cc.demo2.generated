@@ -17,6 +17,29 @@ namespace demo2
 namespace field
 {
 
+/// @brief Common functions for
+///     @ref demo2::field::MsgId field.
+struct MsgIdCommon
+{
+    /// @brief Retrieve name of the enum value
+    static const char* valueName(demo2::MsgId val)
+    {
+        static const char* Map[] = {
+            nullptr,
+            "Msg1",
+            "Msg2"
+        };
+        static const std::size_t MapSize = std::extent<decltype(Map)>::value;
+        
+        if (MapSize <= static_cast<std::size_t>(val)) {
+            return nullptr;
+        }
+        
+        return Map[static_cast<std::size_t>(val)];
+    }
+    
+};
+
 /// @brief Definition of <b>"MsgId"</b> field.
 /// @tparam TOpt Protocol options.
 /// @tparam TExtraOpts Extra options.
@@ -38,18 +61,7 @@ struct MsgId : public
     /// @brief Retrieve name of the enum value
     static const char* valueName(demo2::MsgId val)
     {
-        static const char* Map[] = {
-            nullptr,
-            "Msg1",
-            "Msg2"
-        };
-        static const std::size_t MapSize = std::extent<decltype(Map)>::value;
-        
-        if (MapSize <= static_cast<std::size_t>(val)) {
-            return nullptr;
-        }
-        
-        return Map[static_cast<std::size_t>(val)];
+        return demo2::field::MsgIdCommon::valueName(val);
     }
     
 };

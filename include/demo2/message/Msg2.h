@@ -28,10 +28,10 @@ namespace message
 template <typename TOpt = demo2::options::DefaultOptions>
 struct Msg2Fields
 {
-    /// @brief Scope for all the member fields of @ref List list.
+    /// @brief Scope for all the member fields of ///     @ref List list.
     struct ListMembers
     {
-        /// @brief Scope for all the member fields of @ref Element bitfield.
+        /// @brief Scope for all the member fields of @ref Element bundle.
         struct ElementMembers
         {
             /// @brief Definition of <b>"F1"</b> field.
