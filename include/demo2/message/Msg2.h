@@ -167,16 +167,20 @@ struct Msg2Fields
                 >;
         public:
             /// @brief Allow access to internal fields.
-            /// @details See definition of @b COMMS_FIELD_MEMBERS_ACCESS macro
+            /// @details See definition of @b COMMS_FIELD_MEMBERS_NAMES macro
             ///     related to @b comms::field::Bundle class from COMMS library
             ///     for details.
             ///
             ///     The generated access functions are:
-            ///     @li @b field_f1() - for ElementMembers::F1 member field.
-            ///     @li @b field_f2() - for ElementMembers::F2 member field.
-            ///     @li @b field_f3() - for ElementMembers::F3 member field.
-            ///     @li @b field_f4() - for ElementMembers::F4 member field.
-            COMMS_FIELD_MEMBERS_ACCESS(
+            ///     @li @b Field_f1 @b field_f1() -
+            ///         for ElementMembers::F1 member field.
+            ///     @li @b Field_f2 @b field_f2() -
+            ///         for ElementMembers::F2 member field.
+            ///     @li @b Field_f3 @b field_f3() -
+            ///         for ElementMembers::F3 member field.
+            ///     @li @b Field_f4 @b field_f4() -
+            ///         for ElementMembers::F4 member field.
+            COMMS_FIELD_MEMBERS_NAMES(
                 f1,
                 f2,
                 f3,
@@ -244,14 +248,15 @@ class Msg2 : public
         >;
 
 public:
-    /// @brief Allow access to internal fields.
-    /// @details See definition of @b COMMS_MSG_FIELDS_ACCESS macro
+    /// @brief Provide names and allow access to internal fields.
+    /// @details See definition of @b COMMS_MSG_FIELDS_NAMES macro
     ///     related to @b comms::MessageBase class from COMMS library
     ///     for details.
     ///
-    ///     The generated functions are:
-    ///     @li @b field_list() for @ref Msg2Fields::List field.
-    COMMS_MSG_FIELDS_ACCESS(
+    ///     The generated types and functions are:
+    ///     @li @b Field_list type and @b field_list() fuction
+    ///         for @ref Msg2Fields::List field.
+    COMMS_MSG_FIELDS_NAMES(
         list
     );
     
