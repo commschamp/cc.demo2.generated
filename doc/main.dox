@@ -2,7 +2,7 @@
 /// @tableofcontents
 /// This generated code implements "demo2" binary protocol using various
 /// classes from
-/// <a href="https://github.com/commschamp/comms_champion#comms-library">COMMS Library</a>.@n
+/// <a href="https://github.com/commschamp/comms">COMMS Library</a>.@n
 /// Below is a short summary of generated classes.
 /// Please refer to <b>"How to Use Defined Custom Protocol"</b> page of its documentation
 /// for detailed explanation on how to use them.
@@ -15,16 +15,16 @@
 ///
 /// @section main_messages Available Message Classes
 /// The following namespaces contain all the classes describing available messages:
-/// @li @ref demo2::message (residing in @b demo2/message directory).
+/// @li @ref demo2::message (defined in @b demo2/message  directory)
 ///
 /// @section main_fields Available Common Fields
 /// The following namespaces contain all definition of all the fields,
 /// which can be references by multiple messages:
-/// @li @ref demo2::field (residing in @b demo2/field directory).
+/// @li @ref demo2::field (defined in @b demo2/field  directory)
 ///
 /// @section main_interfaces Common Interface Classes
 /// The available common interface classes are:
-/// @li @ref demo2::Message from @b demo2/Message.h header file).
+/// @li @ref demo2::Message (defined in @b demo2/Message.h header file).
 ///
 /// @section main_frames Frame (Protocol Stack) Classes
 /// The available frame (protocol stack) classes are:
@@ -55,17 +55,17 @@
 /// based.
 ///
 /// The available functions are:
-/// @li @ref demo2::dispatch::dispatchMessage
+/// @li @ref demo2::dispatch::dispatchMessage()
 /// (defined in @b demo2/dispatch/DispatchMessage.h header file).
-/// @li @ref demo2::dispatch::dispatchMessageDefaultOptions
+/// @li @ref demo2::dispatch::dispatchMessageDefaultOptions()
 /// (defined in @b demo2/dispatch/DispatchMessage.h header file).
-/// @li @ref demo2::dispatch::dispatchServerInputMessage
+/// @li @ref demo2::dispatch::dispatchServerInputMessage()
 /// (defined in @b demo2/dispatch/DispatchServerInputMessage.h header file).
-/// @li @ref demo2::dispatch::dispatchServerInputMessageDefaultOptions
+/// @li @ref demo2::dispatch::dispatchServerInputMessageDefaultOptions()
 /// (defined in @b demo2/dispatch/DispatchServerInputMessage.h header file).
-/// @li @ref demo2::dispatch::dispatchClientInputMessage
+/// @li @ref demo2::dispatch::dispatchClientInputMessage()
 /// (defined in @b demo2/dispatch/DispatchClientInputMessage.h header file).
-/// @li @ref demo2::dispatch::dispatchClientInputMessageDefaultOptions
+/// @li @ref demo2::dispatch::dispatchClientInputMessageDefaultOptions()
 /// (defined in @b demo2/dispatch/DispatchClientInputMessage.h header file).
 ///
 /// There are also some dispatcher objects to be used with
