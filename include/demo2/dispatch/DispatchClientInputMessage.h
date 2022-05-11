@@ -26,10 +26,10 @@ namespace dispatch
 ///     to handle and one for the interface class as well.
 ///     @code
 ///     using MyInterface = demo2::Message<...>;
-///     using MyMsg1 = demo2::message::Msg1<MyInterface, demo2::options::DefaultOptions>;
+///     using MyMsg2 = demo2::message::Msg2<MyInterface, demo2::options::DefaultOptions>;
 ///     using MySomeOtherMessage = SomeOtherMessage<MyInterface, demo2::options::DefaultOptions>;
 ///     struct MyHandler {
-///         void handle(MyMsg1& msg) {...}
+///         void handle(MyMsg2& msg) {...}
 ///         void handle(MySomeOtherMessage& msg) {...}
 ///         ...
 ///         // Handle all unexpected or irrelevant messages.
@@ -47,9 +47,9 @@ auto dispatchClientInputMessage(
 {
     using InterfaceType = typename std::decay<decltype(msg)>::type;
     switch(id) {
-    case demo2::MsgId_Msg1:
+    case demo2::MsgId_Msg2:
     {
-        using MsgType = demo2::message::Msg1<InterfaceType, TProtOptions>;
+        using MsgType = demo2::message::Msg2<InterfaceType, TProtOptions>;
         return handler.handle(static_cast<MsgType&>(msg));
     }
     default:

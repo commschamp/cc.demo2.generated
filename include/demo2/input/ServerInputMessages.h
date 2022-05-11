@@ -6,7 +6,7 @@
 #pragma once
 
 #include <tuple>
-#include "demo2/message/Msg2.h"
+#include "demo2/message/Msg1.h"
 #include "demo2/options/DefaultOptions.h"
 
 namespace demo2
@@ -21,7 +21,7 @@ namespace input
 template <typename TBase, typename TOpt = demo2::options::DefaultOptions>
 using ServerInputMessages =
     std::tuple<
-        demo2::message::Msg2<TBase, TOpt>
+        demo2::message::Msg1<TBase, TOpt>
     >;
 
 } // namespace input
